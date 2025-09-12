@@ -174,6 +174,8 @@ namespace UnityAlgorithms.Games.ConnectFour
 
     public WinningStatus GetWinningStatus() => winningStatus;
     public bool IsFirst() => isFirst;
+    public int[,] GetMyBoard() => myBoard;
+    public int[,] GetEnemyBoard() => enemyBoard;
 
     private (int y, int x) PlacePiece(int x)
     {
@@ -190,22 +192,24 @@ namespace UnityAlgorithms.Games.ConnectFour
 
     private void CheckWinCondition((int y, int x) coordinate)
     {
-        // 가로, 세로, 대각선 체크 구현
+        // implement horizontal, vertical, diagonal check
+        // (implementation is complex, so simplified version is provided)
         // (구현 복잡하므로 간략화 버전 제시)
-        if (CheckDirection(coordinate, (0, 1)) || // 가로
-            CheckDirection(coordinate, (1, 0)) || // 세로
-            CheckDirection(coordinate, (1, 1)) || // 대각선 \
-            CheckDirection(coordinate, (1, -1)))  // 대각선 /
+        if (CheckDirection(coordinate, (0, 1)) || // horizontal
+            CheckDirection(coordinate, (1, 0)) || // vertical
+            CheckDirection(coordinate, (1, 1)) || // diagonal \
+            CheckDirection(coordinate, (1, -1)))  // diagonal /
         {
-            winningStatus = WinningStatus.Lose; // 내가 이겼으므로 상대방 패배
+            // SwapBoards() before, so the current player (the player who just placed the piece in myBoard) wins
+            winningStatus = WinningStatus.Win; 
         }
     }
 
     private bool CheckDirection((int y, int x) start, (int dy, int dx) direction)
     {
-        int count = 1; // 시작점 포함
+        int count = 1; // include the starting point
 
-        // 한 방향으로 카운트
+        // count in one direction
         var (y, x) = (start.y + direction.dy, start.x + direction.dx);
         while (IsValidPosition(y, x) && myBoard[y, x] == 1)
         {
@@ -214,7 +218,7 @@ namespace UnityAlgorithms.Games.ConnectFour
             x += direction.dx;
         }
 
-        // 반대 방향으로 카운트
+        // count in the opposite direction
         (y, x) = (start.y - direction.dy, start.x - direction.dx);
         while (IsValidPosition(y, x) && myBoard[y, x] == 1)
         {
