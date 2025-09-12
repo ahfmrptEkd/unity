@@ -68,19 +68,14 @@ namespace UnityAlgorithms.Games.ConnectFour
         public override List<int> LegalActions()
         {
             var actions = new List<int>();
-
             for (int x = 0; x < GameConstants.ConnectFour.W; x++)
             {
-                for (int y = GameConstants.ConnectFour.H - 1; y >= 0; y--)
+                // A column is legal if its top-most cell is empty.
+                if (myBoard[GameConstants.ConnectFour.H - 1, x] == 0 && enemyBoard[GameConstants.ConnectFour.H - 1, x] == 0)
                 {
-                    if (myBoard[y, x] == 0 && enemyBoard[y, x] == 0)
-                    {
-                        actions.Add(x);
-                        break;
-                    }
+                    actions.Add(x);
                 }
             }
-
             return actions;
         }
 
