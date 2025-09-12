@@ -68,12 +68,17 @@ namespace UnityAlgorithms.Games.ConnectFour
         public override List<int> LegalActions()
         {
             var actions = new List<int>();
+            
             for (int x = 0; x < GameConstants.ConnectFour.W; x++)
             {
-                // A column is legal if its top-most cell is empty.
-                if (myBoard[GameConstants.ConnectFour.H - 1, x] == 0 && enemyBoard[GameConstants.ConnectFour.H - 1, x] == 0)
+                // Check from bottom to top for first empty space (Connect4 rule)
+                for (int y = 0; y < GameConstants.ConnectFour.H; y++)
                 {
-                    actions.Add(x);
+                    if (myBoard[y, x] == 0 && enemyBoard[y, x] == 0)
+                    {
+                        actions.Add(x);
+                        break; // Column is available, move to next column
+                    }
                 }
             }
             return actions;
@@ -148,14 +153,12 @@ namespace UnityAlgorithms.Games.ConnectFour
 
     public override GameState Clone()
     {
-        var clone = new ConnectFourState
-        {
-            isFirst = this.isFirst,
-            winningStatus = this.winningStatus,
-            EvaluatedScore = this.EvaluatedScore,
-            myBoard = (int[,])this.myBoard.Clone(),
-            enemyBoard = (int[,])this.enemyBoard.Clone()
-        };
+        var clone = new ConnectFourState();
+        clone.isFirst = this.isFirst;
+        clone.winningStatus = this.winningStatus;
+        clone.EvaluatedScore = this.EvaluatedScore;
+        clone.myBoard = (int[,])this.myBoard.Clone();
+        clone.enemyBoard = (int[,])this.enemyBoard.Clone();
         return clone;
     }
 
