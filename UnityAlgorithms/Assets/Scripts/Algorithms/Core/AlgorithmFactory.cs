@@ -13,6 +13,8 @@ namespace UnityAlgorithms.Algorithms.Core
             {
                 "random" => new EasyAlgorithm(), // Keep random for backward compatibility
                 "easy" => new EasyAlgorithm(),
+                "normal" => new NormalAlgorithm(),
+                "alphabeta" => new NormalAlgorithm(), // Alias for normal
                 _ => throw new ArgumentException($"Unknown algorithm: {algorithmName}")
             };
             
