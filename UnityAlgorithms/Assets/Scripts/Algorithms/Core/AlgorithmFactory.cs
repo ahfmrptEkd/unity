@@ -15,6 +15,8 @@ namespace UnityAlgorithms.Algorithms.Core
                 "easy" => new EasyAlgorithm(),
                 "normal" => new NormalAlgorithm(),
                 "alphabeta" => new NormalAlgorithm(), // Alias for normal
+                "hard" => new HardAlgorithm(),
+                "mcts" => new HardAlgorithm(), // Alias for hard
                 _ => throw new ArgumentException($"Unknown algorithm: {algorithmName}")
             };
             

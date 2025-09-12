@@ -8,7 +8,8 @@ Console.WriteLine("=== Connect Four: Player vs AI ===\n");
 Console.WriteLine("Select AI difficulty:");
 Console.WriteLine("1. Easy (Random moves)");
 Console.WriteLine("2. Normal (Alpha-Beta Pruning)");
-Console.Write("Choose difficulty (1-2): ");
+Console.WriteLine("3. Hard (MCTS)");
+Console.Write("Choose difficulty (1-3): ");
 
 string algorithmName = "easy"; // default
 if (int.TryParse(Console.ReadLine(), out int difficulty))
@@ -17,6 +18,7 @@ if (int.TryParse(Console.ReadLine(), out int difficulty))
     {
         1 => "easy",
         2 => "normal",
+        3 => "hard",
         _ => "easy"
     };
 }
