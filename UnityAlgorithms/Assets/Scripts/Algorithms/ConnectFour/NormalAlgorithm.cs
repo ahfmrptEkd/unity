@@ -37,11 +37,13 @@ namespace UnityAlgorithms.Algorithms.ConnectFour
                 var status = state.GetWinningStatus();
                 if (status == WinningStatus.Win)
                 {
-                    return (-1, maximizingPlayer ? 1000.0 : -1000.0);
+                    // 이전 플레이어가 이긴 상태 - 현재 차례 플레이어 관점에서는 패배
+                    return (-1, maximizingPlayer ? -1000.0 : 1000.0);
                 }
                 else if (status == WinningStatus.Lose)
                 {
-                    return (-1, maximizingPlayer ? -1000.0 : 1000.0);
+                    // 이전 플레이어가 진 상태 - 현재 차례 플레이어 관점에서는 승리
+                    return (-1, maximizingPlayer ? 1000.0 : -1000.0);
                 }
                 else if (status == WinningStatus.Draw)
                 {

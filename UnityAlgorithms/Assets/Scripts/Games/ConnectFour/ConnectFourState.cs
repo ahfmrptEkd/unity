@@ -174,6 +174,8 @@ namespace UnityAlgorithms.Games.ConnectFour
 
     public WinningStatus GetWinningStatus() => winningStatus;
     public bool IsFirst() => isFirst;
+    public int[,] GetMyBoard() => myBoard;
+    public int[,] GetEnemyBoard() => enemyBoard;
 
     private (int y, int x) PlacePiece(int x)
     {
@@ -197,7 +199,7 @@ namespace UnityAlgorithms.Games.ConnectFour
             CheckDirection(coordinate, (1, 1)) || // 대각선 \
             CheckDirection(coordinate, (1, -1)))  // 대각선 /
         {
-            winningStatus = WinningStatus.Lose; // 내가 이겼으므로 상대방 패배
+            winningStatus = WinningStatus.Win; // 내가 이겼으므로 Win
         }
     }
 
