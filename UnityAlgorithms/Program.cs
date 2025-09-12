@@ -4,8 +4,27 @@ using UnityAlgorithms.Algorithms.ConnectFour;
 
 Console.WriteLine("=== Connect Four: Player vs AI ===\n");
 
+// AI difficulty selection
+Console.WriteLine("Select AI difficulty:");
+Console.WriteLine("1. Easy (Random moves)");
+Console.WriteLine("2. Normal (Alpha-Beta Pruning)");
+Console.Write("Choose difficulty (1-2): ");
+
+string algorithmName = "easy"; // default
+if (int.TryParse(Console.ReadLine(), out int difficulty))
+{
+    algorithmName = difficulty switch
+    {
+        1 => "easy",
+        2 => "normal",
+        _ => "easy"
+    };
+}
+
+var ai = AlgorithmFactory.CreateAlgorithm(algorithmName);
+Console.WriteLine($"Selected: {ai.GetName()}\n");
+
 var state = new ConnectFourState();
-var randomAI = AlgorithmFactory.CreateAlgorithm("random");
 
 Console.WriteLine("You are X (first player)");
 Console.WriteLine("AI is O (second player)");
@@ -43,7 +62,7 @@ while (!state.IsDone())
     {
         // AI turn
         Console.WriteLine("AI is thinking...");
-        int aiAction = randomAI.SelectAction(state);
+        int aiAction = ai.SelectAction(state);
         state.Progress(aiAction);
         Console.WriteLine($"AI placed piece in column {aiAction + 1}\n");
     }
@@ -54,10 +73,11 @@ Console.WriteLine(state.ToString());
 switch (state.GetWinningStatus())
 {
     case WinningStatus.Win:
-        Console.WriteLine(state.IsFirst() ? "🎉 You won!" : "🤖 AI won!");
+        // Win is the previous player's victory (after SwapBoards, the current IsFirst is opposite)
+        Console.WriteLine(!state.IsFirst() ? "🎉 You won!" : "🤖 AI won!");
         break;
     case WinningStatus.Lose:
-        Console.WriteLine(state.IsFirst() ? "🤖 AI won!" : "🎉 You won!");
+        Console.WriteLine(!state.IsFirst() ? "🤖 AI won!" : "🎉 You won!");
         break;
     case WinningStatus.Draw:
         Console.WriteLine("🤝 It's a draw!");
