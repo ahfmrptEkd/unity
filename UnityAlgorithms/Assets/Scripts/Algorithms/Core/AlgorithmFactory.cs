@@ -11,7 +11,8 @@ namespace UnityAlgorithms.Algorithms.Core
             
             IAlgorithm algorithm = algorithmName.ToLower() switch
             {
-                "random" => new RandomAlgorithm(),
+                "random" => new EasyAlgorithm(), // Keep random for backward compatibility
+                "easy" => new EasyAlgorithm(),
                 _ => throw new ArgumentException($"Unknown algorithm: {algorithmName}")
             };
             
