@@ -3,6 +3,7 @@ using UnityAlgorithms.Algorithms.Core;
 using UnityAlgorithms.Games.ConnectFour;
 using System.Linq;
 using UnityEngine.UI;
+using TMPro;
 
 // namespace를 UnityAlgorithms 네임스페이스로 묶어주면 좋습니다.
 namespace UnityAlgorithms.Unity
