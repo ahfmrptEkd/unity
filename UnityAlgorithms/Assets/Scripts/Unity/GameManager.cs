@@ -14,6 +14,12 @@ namespace UnityAlgorithms.Unity
         [Header("Required Components")]
         public BoardManager boardManager; // BoardManager 스크립트 연결
         public TMP_Dropdown difficultyDropdown; // 난이도 선택 드롭다운 (TMP 버전)
+        
+        [Header("UI Elements")]
+        public TMP_Text turnIndicatorText; // "Player Turn" / "AI Turn" 표시
+        public GameObject gameOverPanel; // 게임 오버 패널
+        public TMP_Text resultText; // "Player Wins!" 등 결과 텍스트
+        public Button playAgainButton; // 다시하기 버튼
 
         // --- 게임 상태 관련 변수들 ---
         private ConnectFourState currentState; // 현재 게임 상태 (규칙 및 보드 데이터)
@@ -26,6 +32,12 @@ namespace UnityAlgorithms.Unity
             if (difficultyDropdown != null)
             {
                 difficultyDropdown.onValueChanged.AddListener(OnDifficultyChanged);
+            }
+            
+            // 버튼 이벤트 연결
+            if (playAgainButton != null)
+            {
+                playAgainButton.onClick.AddListener(RestartGame);
             }
             
             StartNewGame();
@@ -47,6 +59,10 @@ namespace UnityAlgorithms.Unity
             {
                 boardManager.ClearAllDiscs();
             }
+
+            // 4. UI 초기화
+            UpdateTurnIndicator();
+            HideGameOverPanel();
 
             Debug.Log("New game started. Player's turn (X).");
         }
@@ -73,6 +89,9 @@ namespace UnityAlgorithms.Unity
                     boardManager.PlaceDiscWithGravity(column, true); // true = 플레이어
                 }
 
+                // 턴 표시 업데이트
+                UpdateTurnIndicator();
+
                 // 게임 종료 체크
                 if (currentState.IsDone())
                 {
@@ -80,13 +99,23 @@ namespace UnityAlgorithms.Unity
                     return;
                 }
 
-                // AI 턴 처리
-                ProcessAITurn();
+                // AI 턴 처리 (딜레이 후)
+                StartCoroutine(ProcessAITurnWithDelay());
             }
             else
             {
                 Debug.Log($"Invalid move: column {column} is full");
             }
+        }
+
+        // AI 턴을 딜레이와 함께 처리하는 코루틴
+        private System.Collections.IEnumerator ProcessAITurnWithDelay()
+        {
+            // 1.5초 대기 (AI가 생각하는 시간)
+            yield return new WaitForSeconds(1.5f);
+            
+            // 실제 AI 턴 처리
+            ProcessAITurn();
         }
 
         // AI 턴을 처리하는 함수
@@ -113,6 +142,9 @@ namespace UnityAlgorithms.Unity
                     boardManager.PlaceDiscWithGravity(aiMove, false); // false = AI
                 }
 
+                // 턴 표시 업데이트
+                UpdateTurnIndicator();
+
                 // 게임 종료 체크
                 if (currentState.IsDone())
                 {
@@ -129,25 +161,30 @@ namespace UnityAlgorithms.Unity
         private void HandleGameEnd()
         {
             var status = currentState.GetWinningStatus();
+            string resultMessage = "";
+            
             if (status == WinningStatus.Win)
             {
                 // 현재 턴이 승리 (SwapBoards 후이므로 실제 승자는 반대)
                 if (currentState.IsFirst())
                 {
+                    resultMessage = "AI Wins!";
                     Debug.Log("Game Over: Player O (Yellow/AI) wins!");
                 }
                 else
                 {
+                    resultMessage = "Player Wins!";
                     Debug.Log("Game Over: Player X (Red) wins!");
                 }
             }
             else if (status == WinningStatus.Draw)
             {
+                resultMessage = "Draw!";
                 Debug.Log("Game Over: Draw!");
             }
 
-            // 게임 종료 후 추가 처리 (UI 업데이트 등)
-            // TODO: 게임 오버 UI 표시, 재시작 버튼 활성화 등
+            // 게임 오버 UI 표시
+            ShowGameOverPanel(resultMessage);
         }
 
         // 난이도 변경 시 호출되는 함수
@@ -188,6 +225,46 @@ namespace UnityAlgorithms.Unity
         public void RestartGame()
         {
             StartNewGame();
+        }
+
+        // 턴 표시기 업데이트
+        private void UpdateTurnIndicator()
+        {
+            if (turnIndicatorText == null) return;
+
+            if (currentState.IsFirst())
+            {
+                turnIndicatorText.text = "Player Turn";
+                turnIndicatorText.color = UnityEngine.Color.red;
+            }
+            else
+            {
+                turnIndicatorText.text = "AI Turn";
+                turnIndicatorText.color = UnityEngine.Color.yellow;
+            }
+        }
+
+        // 게임 오버 패널 표시
+        private void ShowGameOverPanel(string message)
+        {
+            if (gameOverPanel != null)
+            {
+                gameOverPanel.SetActive(true);
+            }
+            
+            if (resultText != null)
+            {
+                resultText.text = message;
+            }
+        }
+
+        // 게임 오버 패널 숨기기
+        private void HideGameOverPanel()
+        {
+            if (gameOverPanel != null)
+            {
+                gameOverPanel.SetActive(false);
+            }
         }
     }
 }
