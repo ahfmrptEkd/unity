@@ -20,10 +20,17 @@ namespace UnityAlgorithms.Unity
         public GameObject gameOverPanel; // 게임 오버 패널
         public TMP_Text resultText; // "Player Wins!" 등 결과 텍스트
         public Button playAgainButton; // 다시하기 버튼
+        public Button quitGameButton; // 게임 종료 버튼 (게임 오버 시)
+        
+        [Header("Pause Menu")]
+        public GameObject pauseMenuPanel; // 일시정지 메뉴 패널
+        public Button resumeButton; // 게임 재개 버튼
+        public Button quitPauseButton; // 게임 종료 버튼 (일시정지 메뉴에서)
 
         // --- 게임 상태 관련 변수들 ---
         private ConnectFourState currentState; // 현재 게임 상태 (규칙 및 보드 데이터)
         private IAlgorithm aiAlgorithm; // AI 로직
+        private bool isPaused = false; // 게임 일시정지 상태
 
         // 게임이 시작될 때 한번만 호출됩니다.
         void Start()
@@ -40,7 +47,38 @@ namespace UnityAlgorithms.Unity
                 playAgainButton.onClick.AddListener(RestartGame);
             }
             
+            if (quitGameButton != null)
+            {
+                quitGameButton.onClick.AddListener(QuitGame);
+            }
+            
+            if (resumeButton != null)
+            {
+                resumeButton.onClick.AddListener(ResumeGame);
+            }
+            
+            if (quitPauseButton != null)
+            {
+                quitPauseButton.onClick.AddListener(QuitGame);
+            }
+            
             StartNewGame();
+        }
+        
+        void Update()
+        {
+            // ESC 키로 일시정지 메뉴 토글
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (isPaused)
+                {
+                    ResumeGame();
+                }
+                else
+                {
+                    PauseGame();
+                }
+            }
         }
 
         // 새 게임을 시작하는 함수
@@ -63,6 +101,8 @@ namespace UnityAlgorithms.Unity
             // 4. UI 초기화
             UpdateTurnIndicator();
             HideGameOverPanel();
+            HidePauseMenu();
+            isPaused = false;
 
             Debug.Log("New game started. Player's turn (X).");
         }
@@ -70,8 +110,8 @@ namespace UnityAlgorithms.Unity
         // 컬럼을 클릭했을 때 BoardManager가 호출해 줄 함수
         public void OnColumnSelected(int column)
         {
-            // 게임이 끝났거나 AI 턴이면 무시
-            if (currentState.IsDone() || !currentState.IsFirst())
+            // 게임이 끝났거나 AI 턴이거나 일시정지 상태면 무시
+            if (currentState.IsDone() || !currentState.IsFirst() || isPaused)
             {
                 return;
             }
@@ -121,7 +161,7 @@ namespace UnityAlgorithms.Unity
         // AI 턴을 처리하는 함수
         private void ProcessAITurn()
         {
-            if (currentState.IsDone() || currentState.IsFirst())
+            if (currentState.IsDone() || currentState.IsFirst() || isPaused)
             {
                 return;
             }
@@ -265,6 +305,55 @@ namespace UnityAlgorithms.Unity
             {
                 gameOverPanel.SetActive(false);
             }
+        }
+        
+        // === 일시정지 및 종료 기능 ===
+        
+        // 게임 일시정지
+        public void PauseGame()
+        {
+            isPaused = true;
+            ShowPauseMenu();
+            Time.timeScale = 0f; // 게임 시간 정지
+        }
+        
+        // 게임 재개
+        public void ResumeGame()
+        {
+            isPaused = false;
+            HidePauseMenu();
+            Time.timeScale = 1f; // 게임 시간 복원
+        }
+        
+        // 일시정지 메뉴 표시
+        private void ShowPauseMenu()
+        {
+            if (pauseMenuPanel != null)
+            {
+                pauseMenuPanel.SetActive(true);
+            }
+        }
+        
+        // 일시정지 메뉴 숨기기
+        private void HidePauseMenu()
+        {
+            if (pauseMenuPanel != null)
+            {
+                pauseMenuPanel.SetActive(false);
+            }
+        }
+        
+        // 게임 종료
+        public void QuitGame()
+        {
+            Debug.Log("Quitting game...");
+            
+            // 에디터에서 실행 중일 때
+            #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                Application.Quit();
+            #endif
         }
     }
 }
