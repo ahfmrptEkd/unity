@@ -173,6 +173,9 @@ namespace UnityAlgorithms.Unity
                 return;
             }
 
+            // 디스크 떨어지는 사운드 재생
+            AudioManager.Instance?.PlayDiscDrop();
+
             // 해당 위치에 디스크 배치
             PlaceDiscAt(targetRow, column, isPlayerOne);
         }
