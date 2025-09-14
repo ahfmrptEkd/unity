@@ -99,13 +99,23 @@ namespace UnityAlgorithms.Unity
                     return;
                 }
 
-                // AI 턴 처리
-                ProcessAITurn();
+                // AI 턴 처리 (딜레이 후)
+                StartCoroutine(ProcessAITurnWithDelay());
             }
             else
             {
                 Debug.Log($"Invalid move: column {column} is full");
             }
+        }
+
+        // AI 턴을 딜레이와 함께 처리하는 코루틴
+        private System.Collections.IEnumerator ProcessAITurnWithDelay()
+        {
+            // 1.5초 대기 (AI가 생각하는 시간)
+            yield return new WaitForSeconds(1.5f);
+            
+            // 실제 AI 턴 처리
+            ProcessAITurn();
         }
 
         // AI 턴을 처리하는 함수
