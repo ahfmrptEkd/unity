@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityAlgorithms.Algorithms.Core;
 using UnityAlgorithms.Games.ConnectFour;
+using System.Linq;
 
 // namespace를 UnityAlgorithms 네임스페이스로 묶어주면 좋습니다.
 namespace UnityAlgorithms.Unity
@@ -41,16 +42,16 @@ namespace UnityAlgorithms.Unity
         public void OnColumnSelected(int column)
         {
             // 게임이 끝났거나 AI 턴이면 무시
-            if (currentState.IsTerminal() || !currentState.IsPlayerOneTurn())
+            if (currentState.IsDone() || !currentState.IsFirst())
             {
                 return;
             }
 
             // 플레이어 턴 처리
-            if (currentState.IsValidMove(column))
+            if (currentState.LegalActions().Contains(column))
             {
                 // 플레이어 수 실행
-                currentState = currentState.MakeMove(column);
+                currentState.Progress(column);
                 Debug.Log($"Player placed disc in column {column}");
 
                 // 보드 업데이트
@@ -60,7 +61,7 @@ namespace UnityAlgorithms.Unity
                 }
 
                 // 게임 종료 체크
-                if (currentState.IsTerminal())
+                if (currentState.IsDone())
                 {
                     HandleGameEnd();
                     return;
@@ -78,19 +79,19 @@ namespace UnityAlgorithms.Unity
         // AI 턴을 처리하는 함수
         private void ProcessAITurn()
         {
-            if (currentState.IsTerminal() || currentState.IsPlayerOneTurn())
+            if (currentState.IsDone() || currentState.IsFirst())
             {
                 return;
             }
 
             // AI가 수를 선택
-            int aiMove = aiAlgorithm.SelectMove(currentState);
+            int aiMove = aiAlgorithm.SelectAction(currentState);
             Debug.Log($"AI selected column: {aiMove}");
 
             // AI 수 실행
-            if (currentState.IsValidMove(aiMove))
+            if (currentState.LegalActions().Contains(aiMove))
             {
-                currentState = currentState.MakeMove(aiMove);
+                currentState.Progress(aiMove);
                 Debug.Log($"AI placed disc in column {aiMove}");
 
                 // 보드 업데이트
@@ -100,7 +101,7 @@ namespace UnityAlgorithms.Unity
                 }
 
                 // 게임 종료 체크
-                if (currentState.IsTerminal())
+                if (currentState.IsDone())
                 {
                     HandleGameEnd();
                 }
@@ -114,18 +115,20 @@ namespace UnityAlgorithms.Unity
         // 게임 종료를 처리하는 함수
         private void HandleGameEnd()
         {
-            if (currentState.HasWinner())
+            var status = currentState.GetWinningStatus();
+            if (status == WinningStatus.Win)
             {
-                if (currentState.GetWinner() == 1)
-                {
-                    Debug.Log("Game Over: Player X (Red) wins!");
-                }
-                else
+                // 현재 턴이 승리 (SwapBoards 후이므로 실제 승자는 반대)
+                if (currentState.IsFirst())
                 {
                     Debug.Log("Game Over: Player O (Yellow/AI) wins!");
                 }
+                else
+                {
+                    Debug.Log("Game Over: Player X (Red) wins!");
+                }
             }
-            else
+            else if (status == WinningStatus.Draw)
             {
                 Debug.Log("Game Over: Draw!");
             }

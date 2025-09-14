@@ -25,7 +25,7 @@ namespace UnityAlgorithms.Unity
         void Start()
         {
             // GameManager를 찾아서 연결
-            gameManager = FindObjectOfType<GameManager>();
+            gameManager = FindFirstObjectByType<GameManager>();
             if (gameManager == null)
             {
                 Debug.LogError("GameManager not found in the scene!");
@@ -114,15 +114,25 @@ namespace UnityAlgorithms.Unity
             // 기존 디스크들 모두 제거
             ClearAllDiscs();
 
+            var myBoard = state.GetMyBoard();
+            var enemyBoard = state.GetEnemyBoard();
+            bool isFirst = state.IsFirst();
+
             // 현재 게임 상태에 맞게 디스크들을 배치
             for (int row = 0; row < Rows; row++)
             {
                 for (int col = 0; col < Cols; col++)
                 {
-                    int cellValue = state.GetBoard()[row, col];
-                    if (cellValue != 0) // 0이 아니면 디스크가 있음
+                    if (myBoard[row, col] == 1)
                     {
-                        bool isPlayerOne = (cellValue == 1);
+                        // 현재 턴 플레이어의 말
+                        bool isPlayerOne = isFirst;
+                        PlaceDisc(row, col, isPlayerOne);
+                    }
+                    else if (enemyBoard[row, col] == 1)
+                    {
+                        // 상대방의 말
+                        bool isPlayerOne = !isFirst;
                         PlaceDisc(row, col, isPlayerOne);
                     }
                 }
