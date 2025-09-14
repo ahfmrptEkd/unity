@@ -17,7 +17,6 @@ namespace UnityAlgorithms.Unity
         
         [Header("UI Elements")]
         public TMP_Text turnIndicatorText; // "Player Turn" / "AI Turn" 표시
-        public Button restartButton; // 재시작 버튼
         public GameObject gameOverPanel; // 게임 오버 패널
         public TMP_Text resultText; // "Player Wins!" 등 결과 텍스트
         public Button playAgainButton; // 다시하기 버튼
@@ -36,11 +35,6 @@ namespace UnityAlgorithms.Unity
             }
             
             // 버튼 이벤트 연결
-            if (restartButton != null)
-            {
-                restartButton.onClick.AddListener(RestartGame);
-            }
-            
             if (playAgainButton != null)
             {
                 playAgainButton.onClick.AddListener(RestartGame);
