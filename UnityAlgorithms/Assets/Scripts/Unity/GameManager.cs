@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityAlgorithms.Algorithms.Core;
 using UnityAlgorithms.Games.ConnectFour;
 using System.Linq;
+using UnityEngine.UI;
 
 // namespace를 UnityAlgorithms 네임스페이스로 묶어주면 좋습니다.
 namespace UnityAlgorithms.Unity
@@ -11,6 +12,7 @@ namespace UnityAlgorithms.Unity
         // --- Inspector에서 연결할 변수들 ---
         [Header("Required Components")]
         public BoardManager boardManager; // BoardManager 스크립트 연결
+        public Dropdown difficultyDropdown; // 난이도 선택 드롭다운
 
         // --- 게임 상태 관련 변수들 ---
         private ConnectFourState currentState; // 현재 게임 상태 (규칙 및 보드 데이터)
@@ -19,6 +21,12 @@ namespace UnityAlgorithms.Unity
         // 게임이 시작될 때 한번만 호출됩니다.
         void Start()
         {
+            // 드롭다운 이벤트 연결
+            if (difficultyDropdown != null)
+            {
+                difficultyDropdown.onValueChanged.AddListener(OnDifficultyChanged);
+            }
+            
             StartNewGame();
         }
 
@@ -135,6 +143,26 @@ namespace UnityAlgorithms.Unity
 
             // 게임 종료 후 추가 처리 (UI 업데이트 등)
             // TODO: 게임 오버 UI 표시, 재시작 버튼 활성화 등
+        }
+
+        // 난이도 변경 시 호출되는 함수
+        public void OnDifficultyChanged(int index)
+        {
+            string difficulty = "";
+            switch (index)
+            {
+                case 0: difficulty = "easy"; break;
+                case 1: difficulty = "normal"; break;  
+                case 2: difficulty = "hard"; break;
+                default: difficulty = "easy"; break;
+            }
+
+            // AI 알고리즘 변경
+            aiAlgorithm = AlgorithmFactory.CreateAlgorithm(difficulty);
+            Debug.Log($"Difficulty changed to: {aiAlgorithm.GetName()}");
+
+            // 새 게임 시작 (선택사항)
+            // StartNewGame();
         }
     }
 }
