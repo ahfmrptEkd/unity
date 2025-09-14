@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using UnityAlgorithms.Algorithms.Core;
 using UnityAlgorithms.Core;
 using UnityAlgorithms.Games.ConnectFour;
