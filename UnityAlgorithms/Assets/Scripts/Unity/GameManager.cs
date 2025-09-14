@@ -13,7 +13,7 @@ namespace UnityAlgorithms.Unity
         // --- Inspector에서 연결할 변수들 ---
         [Header("Required Components")]
         public BoardManager boardManager; // BoardManager 스크립트 연결
-        public Dropdown difficultyDropdown; // 난이도 선택 드롭다운
+        public TMP_Dropdown difficultyDropdown; // 난이도 선택 드롭다운 (TMP 버전)
 
         // --- 게임 상태 관련 변수들 ---
         private ConnectFourState currentState; // 현재 게임 상태 (규칙 및 보드 데이터)
