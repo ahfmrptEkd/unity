@@ -127,13 +127,13 @@ namespace UnityAlgorithms.Unity
                     {
                         // 현재 턴 플레이어의 말
                         bool isPlayerOne = isFirst;
-                        PlaceDisc(row, col, isPlayerOne);
+                        PlaceDiscAt(row, col, isPlayerOne);
                     }
                     else if (enemyBoard[row, col] == 1)
                     {
                         // 상대방의 말
                         bool isPlayerOne = !isFirst;
-                        PlaceDisc(row, col, isPlayerOne);
+                        PlaceDiscAt(row, col, isPlayerOne);
                     }
                 }
             }
@@ -153,8 +153,45 @@ namespace UnityAlgorithms.Unity
             }
         }
 
+        // 중력을 적용하여 디스크를 배치하는 함수 (Connect Four 규칙)
+        public void PlaceDiscWithGravity(int column, bool isPlayerOne)
+        {
+            // 해당 컬럼에서 가장 아래쪽 빈 자리 찾기 (Unity 좌표계 기준)
+            int targetRow = -1;
+            for (int row = Rows - 1; row >= 0; row--) // 아래부터 위로 검색 (row 5부터 0까지)
+            {
+                if (IsSlotEmpty(row, column))
+                {
+                    targetRow = row;
+                    break;
+                }
+            }
+
+            if (targetRow == -1)
+            {
+                Debug.LogWarning($"Column {column} is full!");
+                return;
+            }
+
+            // 해당 위치에 디스크 배치
+            PlaceDiscAt(targetRow, column, isPlayerOne);
+        }
+
+        // 특정 위치가 비어있는지 확인
+        private bool IsSlotEmpty(int row, int column)
+        {
+            // 이미 배치된 디스크가 있는지 확인
+            string discName = $"Disc_Red_{row}_{column}";
+            string discName2 = $"Disc_Yellow_{row}_{column}";
+            
+            Transform redDisc = transform.Find(discName);
+            Transform yellowDisc = transform.Find(discName2);
+            
+            return redDisc == null && yellowDisc == null;
+        }
+
         // 디스크를 특정 위치에 생성하는 함수
-        public void PlaceDisc(int row, int col, bool isPlayerOne)
+        private void PlaceDiscAt(int row, int col, bool isPlayerOne)
         {
             // 적절한 프리팹 선택
             GameObject discPrefab = isPlayerOne ? redDiscPrefab : yellowDiscPrefab;
@@ -209,11 +246,13 @@ namespace UnityAlgorithms.Unity
         // 디스크를 부드럽게 떨어뜨리는 코루틴
         private System.Collections.IEnumerator DropDisc(GameObject disc, Vector3 targetPosition)
         {
+            if (disc == null) yield break; // null 체크 추가
+            
             float dropTime = 0.8f; // 낙하 시간
             float elapsedTime = 0f;
             Vector3 startPosition = disc.transform.position;
 
-            while (elapsedTime < dropTime)
+            while (elapsedTime < dropTime && disc != null) // null 체크 추가
             {
                 elapsedTime += Time.deltaTime;
                 float progress = elapsedTime / dropTime;
@@ -225,14 +264,17 @@ namespace UnityAlgorithms.Unity
                 yield return null;
             }
 
-            // 최종 위치 확정
-            disc.transform.position = targetPosition;
-
-            // Rigidbody 제거 (더 이상 물리 불필요)
-            Rigidbody rb = disc.GetComponent<Rigidbody>();
-            if (rb != null)
+            // 최종 위치 확정 (null 체크)
+            if (disc != null)
             {
-                Destroy(rb);
+                disc.transform.position = targetPosition;
+
+                // Rigidbody 제거 (더 이상 물리 불필요)
+                Rigidbody rb = disc.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    Destroy(rb);
+                }
             }
         }
     }

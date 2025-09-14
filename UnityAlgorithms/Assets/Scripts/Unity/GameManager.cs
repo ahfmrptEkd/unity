@@ -54,10 +54,10 @@ namespace UnityAlgorithms.Unity
                 currentState.Progress(column);
                 Debug.Log($"Player placed disc in column {column}");
 
-                // 보드 업데이트
+                // 개별 디스크 배치 (중력 적용)
                 if (boardManager != null)
                 {
-                    boardManager.DrawBoard(currentState);
+                    boardManager.PlaceDiscWithGravity(column, true); // true = 플레이어
                 }
 
                 // 게임 종료 체크
@@ -94,10 +94,10 @@ namespace UnityAlgorithms.Unity
                 currentState.Progress(aiMove);
                 Debug.Log($"AI placed disc in column {aiMove}");
 
-                // 보드 업데이트
+                // 개별 디스크 배치 (중력 적용)
                 if (boardManager != null)
                 {
-                    boardManager.DrawBoard(currentState);
+                    boardManager.PlaceDiscWithGravity(aiMove, false); // false = AI
                 }
 
                 // 게임 종료 체크
