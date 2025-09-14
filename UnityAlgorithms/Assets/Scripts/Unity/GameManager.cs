@@ -36,12 +36,16 @@ namespace UnityAlgorithms.Unity
             // 1. 게임 상태 초기화
             currentState = new ConnectFourState();
 
-            // 2. AI 난이도 설정 (우선 'easy'로 고정)
-            aiAlgorithm = AlgorithmFactory.CreateAlgorithm("easy");
+            // 2. AI 난이도 설정 (드롭다운 값 기준, 없으면 기본값)
+            string difficulty = GetCurrentDifficulty();
+            aiAlgorithm = AlgorithmFactory.CreateAlgorithm(difficulty);
             Debug.Log($"AI algorithm '{aiAlgorithm.GetName()}' is ready.");
 
-            // 3. 보드 매니저에게 보드를 그리라고 명령
-            // boardManager.DrawBoard(currentState); // (나중에 BoardManager 구현 후 주석 해제)
+            // 3. 기존 디스크들 모두 제거 (새 게임이므로)
+            if (boardManager != null)
+            {
+                boardManager.ClearAllDiscs();
+            }
 
             Debug.Log("New game started. Player's turn (X).");
         }
@@ -163,6 +167,26 @@ namespace UnityAlgorithms.Unity
 
             // 새 게임 시작 (선택사항)
             // StartNewGame();
+        }
+
+        // 현재 드롭다운에서 선택된 난이도 가져오기
+        private string GetCurrentDifficulty()
+        {
+            if (difficultyDropdown == null) return "easy";
+
+            return difficultyDropdown.value switch
+            {
+                0 => "easy",
+                1 => "normal", 
+                2 => "hard",
+                _ => "easy"
+            };
+        }
+
+        // 공개 메소드로 재시작 버튼에서 호출 가능
+        public void RestartGame()
+        {
+            StartNewGame();
         }
     }
 }
