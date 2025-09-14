@@ -139,8 +139,8 @@ namespace UnityAlgorithms.Unity
             }
         }
 
-        // 모든 디스크를 제거하는 함수
-        private void ClearAllDiscs()
+        // 모든 디스크를 제거하는 함수 (공개 메소드로 변경)
+        public void ClearAllDiscs()
         {
             // "Disc_"로 시작하는 모든 자식 오브젝트 찾기
             Transform[] children = GetComponentsInChildren<Transform>();
